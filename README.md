@@ -43,8 +43,8 @@ twos-complement representation).
 
 Subtracts the result of the previous comparison from the accumulator
 vector `v1`. Because `true` is represented by -1, we need to subtract
-(because `current <- previous - -1` is the same as `current <- previous
-+ 1`).
+(because `current <- previous - -1` is the same as
+`current <- previous + 1`).
 
     usra.8h v0, v2, #15
 
