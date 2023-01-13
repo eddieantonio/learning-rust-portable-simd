@@ -1,7 +1,7 @@
 #![feature(portable_simd)]
 
 use std::simd::i16x8;
-use std::simd::SimdPartialOrd;
+use std::simd::{SimdInt, SimdPartialOrd};
 
 pub mod data;
 
@@ -24,8 +24,8 @@ pub fn problem_1(array: &[i16]) -> i16 {
         i += 8;
     }
 
-    let n_positive = -positives.to_array().into_iter().sum::<i16>();
-    let n_negative = -negatives.to_array().into_iter().sum::<i16>();
+    let n_positive = -positives.reduce_sum();
+    let n_negative = -negatives.reduce_sum();
 
     std::cmp::max(n_positive, n_negative)
 }
