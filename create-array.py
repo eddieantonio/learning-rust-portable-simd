@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 from random import randint
 
@@ -23,5 +25,5 @@ else:
 contents = f"""pub const ARRAY: [i16; {len(a)}] = {a!r};
 """
 
-with open("src/lib.rs", "w") as f:
+with open("src/data.rs", "w") as f:
     f.write(contents)
