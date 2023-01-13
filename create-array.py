@@ -1,6 +1,11 @@
+import sys
 from random import randint
 
-N = 32
+try:
+    N = int(sys.argv[1])
+except (IndexError, ValueError):
+    N = 32
+
 assert (N % 8) == 0
 
 a = [randint(-2000, 2000) for _ in range(N)]
