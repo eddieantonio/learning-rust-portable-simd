@@ -15,6 +15,11 @@ struct Counts(i16, i16);
 ///     (this fits in within -32768 <= i16 <= 32767)
 ///  * I'm on an M1 Macbook, which has AArch64 Neon (128-bit SIMD) support.
 pub fn problem_1(nums: &[i16]) -> i16 {
+    let Counts(n_positive, n_negative) = count_pos_neg_vectorized(nums);
+    std::cmp::max(n_positive, n_negative)
+}
+
+fn count_pos_neg_vectorized(nums: &[i16]) -> Counts {
     let (prefix, middle, suffix) = nums.as_simd();
 
     // To ensure memory access are in order, access the prefix first:
@@ -39,9 +44,7 @@ pub fn problem_1(nums: &[i16]) -> i16 {
     // Finally, the suffix:
     let suffix_counts = count_pos_neg_non_vectorized(suffix);
 
-    let Counts(n_positive, n_negative) = prefix_counts + middle_counts + suffix_counts;
-
-    std::cmp::max(n_positive, n_negative)
+    prefix_counts + middle_counts + suffix_counts
 }
 
 #[inline]
