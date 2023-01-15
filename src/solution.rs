@@ -1,6 +1,9 @@
 use std::simd::i16x8;
 use std::simd::{SimdInt, SimdPartialOrd};
 
+#[derive(Copy, Clone, Debug)]
+struct Counts(i16, i16);
+
 /// Solves leetcode contest 327, problem 1.
 ///
 /// "Maximum Count of Positive Integer and Negative Integer"
@@ -15,7 +18,7 @@ pub fn problem_1(nums: &[i16]) -> i16 {
     let (prefix, middle, suffix) = nums.as_simd();
 
     // To ensure memory access are in order, access the prefix first:
-    let (n_prefix_positives, n_prefix_negatives) = count_pos_neg_non_vectorized(prefix);
+    let prefix_counts = count_pos_neg_non_vectorized(prefix);
 
     // Now we can count positives and negatives in the middle, 8 values at a time!
     let zero = i16x8::splat(0);
@@ -31,22 +34,36 @@ pub fn problem_1(nums: &[i16]) -> i16 {
         positives -= chunk.simd_gt(zero).to_int();
         negatives -= chunk.simd_lt(zero).to_int();
     }
+    let middle_counts = (positives.reduce_sum(), negatives.reduce_sum()).into();
 
     // Finally, the suffix:
-    let (n_suffix_positives, n_suffix_negatives) = count_pos_neg_non_vectorized(suffix);
+    let suffix_counts = count_pos_neg_non_vectorized(suffix);
 
-    let n_positive = n_prefix_positives + n_suffix_positives + positives.reduce_sum();
-    let n_negative = n_prefix_negatives + n_suffix_negatives + negatives.reduce_sum();
+    let Counts(n_positive, n_negative) = prefix_counts + middle_counts + suffix_counts;
 
     std::cmp::max(n_positive, n_negative)
 }
 
 #[inline]
-fn count_pos_neg_non_vectorized(array: &[i16]) -> (i16, i16) {
+fn count_pos_neg_non_vectorized(array: &[i16]) -> Counts {
     array
         .iter()
         .copied()
         .fold((0, 0), |(n_positive, n_negative), n| {
             (n_positive + (n > 0) as i16, n_negative + (n < 0) as i16)
         })
+        .into()
+}
+
+impl From<(i16, i16)> for Counts {
+    fn from((a, b): (i16, i16)) -> Self {
+        Counts(a, b)
+    }
+}
+
+impl std::ops::Add for Counts {
+    type Output = Self;
+    fn add(self, other: Self) -> Self {
+        Self(self.0 + other.0, self.1 + other.1)
+    }
 }
