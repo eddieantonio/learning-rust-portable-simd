@@ -1,9 +1,6 @@
 use std::simd::i16x8;
 use std::simd::{SimdInt, SimdPartialOrd};
 
-#[derive(Copy, Clone, Debug)]
-struct Counts(i16, i16);
-
 /// Solves leetcode contest 327, problem 1.
 ///
 /// "Maximum Count of Positive Integer and Negative Integer"
@@ -15,15 +12,10 @@ struct Counts(i16, i16);
 ///     (this fits in within -32768 <= i16 <= 32767)
 ///  * I'm on an M1 Macbook, which has AArch64 Neon (128-bit SIMD) support.
 pub fn problem_1(nums: &[i16]) -> usize {
-    let Counts(n_positive, n_negative) = count_pos_neg_vectorized(nums);
-    std::cmp::max(n_positive, n_negative) as usize
-}
-
-fn count_pos_neg_vectorized(nums: &[i16]) -> Counts {
     let (prefix, middle, suffix) = nums.as_simd();
 
     // To ensure memory access are in order, access the prefix first:
-    let prefix_counts = count_pos_neg_non_vectorized(prefix);
+    let (n_positive, n_negative) = count_pos_neg_non_vectorized(prefix);
 
     // Now we can count positives and negatives in the middle, 8 values at a time!
     let zero = i16x8::splat(0);
@@ -39,34 +31,23 @@ fn count_pos_neg_vectorized(nums: &[i16]) -> Counts {
         positives -= chunk.simd_gt(zero).to_int();
         negatives -= chunk.simd_lt(zero).to_int();
     }
-    let middle_counts = (positives.reduce_sum(), negatives.reduce_sum()).into();
+    let n_positive = n_positive + positives.reduce_sum();
+    let n_negative = n_negative + negatives.reduce_sum();
 
     // Finally, the suffix:
-    let suffix_counts = count_pos_neg_non_vectorized(suffix);
+    let (suffix_positives, suffix_negatives) = count_pos_neg_non_vectorized(suffix);
+    let n_positive = n_positive + suffix_positives;
+    let n_negative = n_negative + suffix_negatives;
 
-    prefix_counts + middle_counts + suffix_counts
+    std::cmp::max(n_positive, n_negative) as usize
 }
 
 #[inline]
-fn count_pos_neg_non_vectorized(array: &[i16]) -> Counts {
+fn count_pos_neg_non_vectorized(array: &[i16]) -> (i16, i16) {
     array
         .iter()
         .copied()
         .fold((0, 0), |(n_positive, n_negative), n| {
             (n_positive + (n > 0) as i16, n_negative + (n < 0) as i16)
         })
-        .into()
-}
-
-impl From<(i16, i16)> for Counts {
-    fn from((a, b): (i16, i16)) -> Self {
-        Counts(a, b)
-    }
-}
-
-impl std::ops::Add for Counts {
-    type Output = Self;
-    fn add(self, other: Self) -> Self {
-        Self(self.0 + other.0, self.1 + other.1)
-    }
 }
