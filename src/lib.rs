@@ -1,9 +1,11 @@
 #![feature(portable_simd)]
 
 pub mod data;
-mod solution;
+pub mod implementations;
 
 pub mod prelude {
+    /// Default test data.
     pub use crate::data::ARRAY;
-    pub use crate::solution::problem_1;
+    /// Default implementation is the SIMD version.
+    pub use crate::implementations::simd::problem_1;
 }
