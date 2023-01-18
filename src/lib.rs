@@ -12,10 +12,17 @@ pub mod prelude {
 
 #[cfg(test)]
 mod tests {
-    use super::{data, implementations};
 
-    #[test]
-    fn test_simd() {
-        assert_eq!(data::ANSWER, implementations::simd::problem_1(&data::ARRAY));
+    macro_rules! impl_test {
+        ($mod: ident) => {
+            #[test]
+            fn $mod() {
+                use super::{data, implementations};
+                assert_eq!(data::ANSWER, implementations::$mod::problem_1(&data::ARRAY));
+            }
+        };
     }
+
+    impl_test!(simd);
+    impl_test!(fold);
 }
