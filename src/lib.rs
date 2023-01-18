@@ -25,4 +25,5 @@ mod tests {
 
     impl_test!(simd);
     impl_test!(fold);
+    impl_test!(c);
 }
