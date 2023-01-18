@@ -16,23 +16,26 @@ pub mod prelude {
 
 #[cfg(test)]
 mod tests {
+    use super::data;
     use test::Bencher;
 
-    macro_rules! impl_test {
-        ($mod: ident) => {
-            #[test]
-            fn $mod() {
-                use super::{data, implementations};
-                assert_eq!(data::ANSWER, implementations::$mod::problem_1(&data::ARRAY));
-            }
-        };
+    #[test]
+    fn test_c() {
+        use crate::implementations::c::problem_1;
+        assert_eq!(data::ANSWER, problem_1(&data::ARRAY));
     }
 
-    impl_test!(simd);
-    impl_test!(fold);
-    impl_test!(c);
+    #[test]
+    fn test_simd() {
+        use crate::implementations::simd::problem_1;
+        assert_eq!(data::ANSWER, problem_1(&data::ARRAY));
+    }
 
-    use crate::data;
+    #[test]
+    fn test_fold() {
+        use crate::implementations::fold::problem_1;
+        assert_eq!(data::ANSWER, problem_1(&data::ARRAY));
+    }
 
     #[bench]
     fn bench_c(b: &mut Bencher) {
