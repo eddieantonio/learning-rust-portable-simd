@@ -14,9 +14,9 @@ struct Counts(i16, i16);
 ///  * the numbers satisfy this property: -2000 <= `nums[i]` <= 2000.
 ///     (this fits in within -32768 <= i16 <= 32767)
 ///  * I'm on an M1 Macbook, which has AArch64 Neon (128-bit SIMD) support.
-pub fn problem_1(nums: &[i16]) -> i16 {
+pub fn problem_1(nums: &[i16]) -> usize {
     let Counts(n_positive, n_negative) = count_pos_neg_vectorized(nums);
-    std::cmp::max(n_positive, n_negative)
+    std::cmp::max(n_positive, n_negative) as usize
 }
 
 fn count_pos_neg_vectorized(nums: &[i16]) -> Counts {

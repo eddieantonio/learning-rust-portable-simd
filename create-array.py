@@ -23,6 +23,7 @@ print(explanation)
 with open("src/data.rs", "w") as f:
     f.write(
         f"""/// {explanation}
+pub const ANSWER: usize = {answer};
 pub const ARRAY: [i16; {len(a)}] = {a!r};
 """
     )
@@ -32,6 +33,7 @@ pub const ARRAY: [i16; {len(a)}] = {a!r};
 with open("data.py", "w") as f:
     f.write(
         f"""# {explanation}
+ANSWER = {answer}
 ARRAY = {a!r}
 """
     )
