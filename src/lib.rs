@@ -20,8 +20,20 @@ mod tests {
     use test::Bencher;
 
     #[test]
+    fn test_binary() {
+        use crate::implementations::binary::problem_1;
+        assert_eq!(data::ANSWER, problem_1(&data::ARRAY));
+    }
+
+    #[test]
     fn test_c() {
         use crate::implementations::c::problem_1;
+        assert_eq!(data::ANSWER, problem_1(&data::ARRAY));
+    }
+
+    #[test]
+    fn test_fold() {
+        use crate::implementations::fold::problem_1;
         assert_eq!(data::ANSWER, problem_1(&data::ARRAY));
     }
 
@@ -31,10 +43,10 @@ mod tests {
         assert_eq!(data::ANSWER, problem_1(&data::ARRAY));
     }
 
-    #[test]
-    fn test_fold() {
-        use crate::implementations::fold::problem_1;
-        assert_eq!(data::ANSWER, problem_1(&data::ARRAY));
+    #[bench]
+    fn bench_binary(b: &mut Bencher) {
+        use crate::implementations::binary::problem_1;
+        b.iter(|| problem_1(&data::ARRAY));
     }
 
     #[bench]
