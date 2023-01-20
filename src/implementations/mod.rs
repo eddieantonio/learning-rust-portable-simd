@@ -1,3 +1,4 @@
+pub mod binary;
 pub mod c;
 pub mod fold;
 pub mod simd;
