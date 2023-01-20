@@ -1,11 +1,10 @@
 pub fn problem_1(nums: &[i16]) -> usize {
+    let zeros_end_index = find_upper_range_start(nums);
+    let n_positives = nums.len() - zeros_end_index;
+
     // Unable to find the first zero? (because all greater than zero)
     // then there are no negatives:
-    let n_negatives = find_lower_range_start(nums).unwrap_or(0);
-
-    // Unable to find the first zero?
-    let zeros_end_index = find_upper_range_start(&nums[n_negatives..]);
-    let n_positives = nums.len() - (n_negatives + zeros_end_index);
+    let n_negatives = find_lower_range_start(&nums[..zeros_end_index]).unwrap_or(0);
 
     std::cmp::max(n_positives, n_negatives)
 }
