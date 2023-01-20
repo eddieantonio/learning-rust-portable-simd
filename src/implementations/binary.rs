@@ -5,9 +5,7 @@ pub fn problem_1(nums: &[i16]) -> usize {
 
     // Unable to find the first zero?
     let zeros_end_index = find_upper_range_start(&nums[n_negatives..]);
-    let n_positives = zeros_end_index
-        .map(|i| nums.len() - (i + n_negatives))
-        .unwrap();
+    let n_positives = nums.len() - (n_negatives + zeros_end_index);
 
     std::cmp::max(n_positives, n_negatives)
 }
@@ -46,12 +44,12 @@ fn find_lower_range_start(nums: &[i16]) -> Option<usize> {
 }
 
 // Finds the first number greater than zero
-fn find_upper_range_start(nums: &[i16]) -> Option<usize> {
+fn find_upper_range_start(nums: &[i16]) -> usize {
     let mut low = 0;
     let mut high = nums.len();
 
     if nums.is_empty() {
-        return Some(0);
+        return 0;
     }
 
     while high > low {
@@ -65,7 +63,7 @@ fn find_upper_range_start(nums: &[i16]) -> Option<usize> {
         }
     }
 
-    Some(low)
+    low
 }
 
 #[cfg(test)]
@@ -86,16 +84,16 @@ mod test {
         assert_eq!(expected, find_lower_range_start(array));
     }
 
-    #[test_case(Some(2), &[-1, 0, 1] ; "Basic")]
-    #[test_case(Some(3), &[-1, -1, -1] ; "All negative 1")]
-    #[test_case(Some(0), &[1, 1, 1] ; "All 1")]
-    #[test_case(Some(1), &[0] ; "Just zero")]
-    #[test_case(Some(4), &[-1, -1, -1, 0] ; "Zero at end")]
-    #[test_case(Some(1), &[0, 1, 1, 1, 1] ; "Zero at beginning")]
-    #[test_case(Some(2), &[-1, 0, 1, 1] ; "Zero off from middle")]
-    #[test_case(Some(3), &[-1, 0, 0, 1] ; "Span of zeros")]
-    #[test_case(Some(3), &[-1, -1, 0, 1] ; "Zero off from middle 1")]
-    fn test_find_upper_range(expected: Option<usize>, array: &[i16]) {
+    #[test_case(2, &[-1, 0, 1] ; "Basic")]
+    #[test_case(3, &[-1, -1, -1] ; "All negative 1")]
+    #[test_case(0, &[1, 1, 1] ; "All 1")]
+    #[test_case(1, &[0] ; "Just zero")]
+    #[test_case(4, &[-1, -1, -1, 0] ; "Zero at end")]
+    #[test_case(1, &[0, 1, 1, 1, 1] ; "Zero at beginning")]
+    #[test_case(2, &[-1, 0, 1, 1] ; "Zero off from middle")]
+    #[test_case(3, &[-1, 0, 0, 1] ; "Span of zeros")]
+    #[test_case(3, &[-1, -1, 0, 1] ; "Zero off from middle 1")]
+    fn test_find_upper_range(expected: usize, array: &[i16]) {
         assert_eq!(expected, find_upper_range_start(array));
     }
 
