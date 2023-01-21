@@ -1,42 +1,58 @@
 pub fn problem_1(nums: &[i16]) -> usize {
-    let n_positives = bisect_right(nums, 0).len();
-    let n_negatives = bisect_left(nums, 0).len();
+    let n_positives = nums.bisect_right(0).len();
+    let n_negatives = nums.bisect_left(0).len();
 
     std::cmp::max(n_positives, n_negatives)
 }
 
-/// Return a subslice of everything to that is less than `x`.
-fn bisect_left<T: std::cmp::PartialOrd>(slice: &[T], x: T) -> &[T] {
-    let mut low = 0;
-    let mut high = slice.len();
-
-    while low < high {
-        let mid = low + (high - low) / 2;
-        if slice[mid] < x {
-            low = mid + 1;
-        } else {
-            high = mid;
-        }
-    }
-
-    &slice[..low]
+trait Bisect<T>
+where
+    T: std::cmp::PartialOrd,
+{
+    type Output;
+    fn bisect_left(self, x: T) -> Self::Output;
+    fn bisect_right(self, x: T) -> Self::Output;
 }
 
-/// Return a subslice of everything such that `x < a[i]` for all `i`.
-fn bisect_right<T: std::cmp::PartialOrd>(slice: &[T], x: T) -> &[T] {
-    let mut low = 0;
-    let mut high = slice.len();
+impl<'a, T> Bisect<T> for &'a [T]
+where
+    T: std::cmp::PartialOrd,
+{
+    type Output = &'a [T];
 
-    while low < high {
-        let mid = low + (high - low) / 2;
-        if x < slice[mid] {
-            high = mid;
-        } else {
-            low = mid + 1;
+    /// Return a subslice of everything to that is less than `x`.
+    fn bisect_left(self, x: T) -> &'a [T] {
+        let mut low = 0;
+        let mut high = self.len();
+
+        while low < high {
+            let mid = low + (high - low) / 2;
+            if self[mid] < x {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
         }
+
+        &self[..low]
     }
 
-    &slice[high..]
+    /// Return a subslice of everything such that `x < a[i]` for all `i`.
+    fn bisect_right(self, x: T) -> &'a [T] {
+        let mut low = 0;
+        let mut high = self.len();
+
+        while low < high {
+            let mid = low + (high - low) / 2;
+            if x < self[mid] {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+
+        &self[high..]
+    }
 }
 
 #[cfg(test)]
