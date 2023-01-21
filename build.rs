@@ -6,9 +6,9 @@ fn main() {
 }
 
 fn compile_c_library() {
-    cc::Build::new()
-        .file("./src/implementations/c-implementation.c")
-        .compile("libproblem1.a");
+    let source = "src/implementations/c-implementation.c";
+    cc::Build::new().file(source).compile("libproblem1.a");
+    println!("cargo:rerun-if-changed={source}");
 }
 
 fn create_sample_data() {
