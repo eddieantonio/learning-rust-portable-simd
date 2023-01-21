@@ -7,14 +7,14 @@ pub fn problem_1(nums: &[i16]) -> usize {
         let mut low = 0;
         let mut high = nums.len();
 
-        while high > low {
+        while low < high {
             let midpoint = low + (high - low) / 2;
-            if nums[midpoint] <= 0 {
-                // Eliminate the left-hand side to search on the right.
-                low = midpoint + 1;
-            } else {
+            if 0 < nums[midpoint] {
                 // Eliminate the right-hand side to search on the left.
                 high = midpoint;
+            } else {
+                // Eliminate the left-hand side to search on the right.
+                low = midpoint + 1;
             }
         }
 
@@ -38,29 +38,24 @@ fn find_lower_range_start(nums: &[i16]) -> Option<usize> {
         return None;
     }
 
-    if nums[0] > 0 {
+    if 0 < nums[0] {
         // The first element is greater than zero.  If it's in non-decreasing order, that means it
         // can't contain zero!
         return None;
     }
 
-    if nums[0] == 0 {
-        // Avoid looping with this one weird trick!
-        return Some(0);
-    }
-
-    while high - low > 1 {
+    while low < high {
         let midpoint = low + (high - low) / 2;
-        if nums[midpoint] >= 0 {
+        if nums[midpoint] < 0 {
+            // Eliminate the left-hand side to search in the right.
+            low = midpoint + 1;
+        } else {
             // Eliminate the right-hand side to search in the left.
             high = midpoint;
-        } else {
-            // Eliminate the left-hand side to search in the right.
-            low = midpoint;
         }
     }
 
-    Some(high)
+    Some(low)
 }
 
 #[cfg(test)]
