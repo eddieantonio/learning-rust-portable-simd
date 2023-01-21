@@ -26,8 +26,14 @@ mod tests {
     }
 
     #[test]
-    fn test_c() {
-        use crate::implementations::c::problem_1;
+    fn test_c_for() {
+        use crate::implementations::c_for::problem_1;
+        assert_eq!(data::ANSWER, problem_1(&data::ARRAY));
+    }
+
+    #[test]
+    fn test_c_binary() {
+        use crate::implementations::c_binary::problem_1;
         assert_eq!(data::ANSWER, problem_1(&data::ARRAY));
     }
 
@@ -50,8 +56,14 @@ mod tests {
     }
 
     #[bench]
-    fn bench_c(b: &mut Bencher) {
-        use crate::implementations::c::problem_1;
+    fn bench_c_for(b: &mut Bencher) {
+        use crate::implementations::c_for::problem_1;
+        b.iter(|| problem_1(&data::ARRAY));
+    }
+
+    #[bench]
+    fn bench_c_binary(b: &mut Bencher) {
+        use crate::implementations::c_binary::problem_1;
         b.iter(|| problem_1(&data::ARRAY));
     }
 
