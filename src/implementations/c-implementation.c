@@ -32,6 +32,7 @@ size_t problem_1_binary(int16_t *array, size_t n) {
 
     /* Bisect right for index of first positive number: */
     /* Low is kept at the same place. */
+    low = 0;
     high = n;
     while (low < high) {
         size_t midpoint = low + (high - low) / 2;
