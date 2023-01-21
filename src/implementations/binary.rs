@@ -1,58 +1,29 @@
 pub fn problem_1(nums: &[i16]) -> usize {
-    let n_positives = nums.bisect_right(0).len();
-    let n_negatives = nums.bisect_left(0).len();
-
-    std::cmp::max(n_positives, n_negatives)
-}
-
-trait Bisect<T>
-where
-    T: std::cmp::PartialOrd,
-{
-    type Output;
-    fn bisect_left(self, x: T) -> Self::Output;
-    fn bisect_right(self, x: T) -> Self::Output;
-}
-
-impl<'a, T> Bisect<T> for &'a [T]
-where
-    T: std::cmp::PartialOrd,
-{
-    type Output = &'a [T];
-
-    /// Return a subslice of everything to that is less than `x`.
-    fn bisect_left(self, x: T) -> &'a [T] {
-        let mut low = 0;
-        let mut high = self.len();
-
-        while low < high {
-            let mid = low + (high - low) / 2;
-            if self[mid] < x {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-
-        &self[..low]
-    }
-
-    /// Return a subslice of everything such that `x < a[i]` for all `i`.
-    fn bisect_right(self, x: T) -> &'a [T] {
-        let mut low = 0;
-        let mut high = self.len();
-
-        while low < high {
-            let mid = low + (high - low) / 2;
-            if x < self[mid] {
-                high = mid;
-            } else {
-                low = mid + 1;
-            }
-        }
-
-        &self[high..]
-    }
+    // This works by finding two indices:
+    //
+    //              numbers:
+    // | -3 | -2 | -1 |  0 |  0 |  0 |  0 |  1 |  2 |  3 |
+    // |0===|1===|2===|3===|4===|5===|6===|7===|8===|9===| n = 10
+    //                 ^                   ^
+    //                 a                   b
+    //
+    // a = First index where there can be no more negative numbers.
+    //     In other words, everything to the left satisfies the property:
+    //     a[i] < 0.
+    // b = First index where there must be positive numbers.
+    //     In other words, everything to the left satistifies the property:
+    //     a[i] <= 0.
+    //
+    // The number of negatives is equal to a -- nothing to do there.
+    // The number of positives is the area from b to n, or in other words, n - b.
+    //
+    // slice.partition_point() performs a binary search, probing the given property.
+    // If the entire array satisfies the property, then it returns n.
+    // The consequence is that, if all a[i] <= 0, then b = n which means n - b == 0,
+    // which means there are no positive numbers in the array.
+    let n_negatives = nums.partition_point(|&x| x < 0);
+    let n_positives = nums.len() - nums.partition_point(|&x| x <= 0);
+    std::cmp::max(n_negatives, n_positives)
 }
 
 #[cfg(test)]
